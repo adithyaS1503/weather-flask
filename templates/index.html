@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+</head>
+<body>
+    <h1>Weather App</h1>
+    <form id="weatherForm">
+        <label for="city">Enter City:</label>
+        <input type="text" id="city" name="city" required>
+        <button type="submit">Get Weather</button>
+    </form>
+
+    <!-- Details displayed here. -->
+    <div id="weatherResult"></div>
+
+    <script>
+        // Select the form and weather result div
+        const weatherForm = document.getElementById('weatherForm');
+        const weatherResult = document.getElementById('weatherResult');
+
+        // Add an event listener for form submission
+        weatherForm.addEventListener('submit', function(event) {
+
+            const city = document.getElementById('city').value;  // Get the city input value
+
+            // Fetch weather data from Flask API
+            fetch(`/api/weather?city=${city}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        weatherResult.innerHTML = `<p>Error: ${data.error}</p>`;
+                    } else {
+                        // Display the weather details
+                        weatherResult.innerHTML = `
+                            <h2>Weather in ${data.name}</h2>
+                            <p>Temperature: ${data.main.temp}°C</p>
+                            <p>Humidity: ${data.main.humidity}%</p>
+                            <p>Weather: ${data.weather[0].description}</p>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    weatherResult.innerHTML = `<p>Error fetching weather data: ${error.message}</p>`;
+                });
+        });
+    </script>
+</body>
+</html>
